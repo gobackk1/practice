@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: my-nginx
+    ports:
+      - "8080:80"  # ホストの8080番ポートをコンテナの80番ポートにマッピング
+    volumes:
+      - ./html:/usr/share/nginx/html:ro  # ローカルのhtmlフォルダをNginxの公開ディレクトリにマウント
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro  # カスタム設定を適用
+    restart: always
+    depends_on:
+      - backend  # APIサーバーが先に起動するように
+    networks:
+      - practicenet 
+  backend:
+    build: ./backend
+    container_name: my-express-api
+    ports:
+      - "3000:3000"  # ExpressのAPIサーバーをホストの3000番ポートに公開
+    restart: always
+    networks:
+      - practicenet
+networks:
+  practicenet:
